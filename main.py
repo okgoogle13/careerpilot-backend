@@ -76,7 +76,11 @@ async def prepare_for_interview(req: InterviewPrepRequest, user: dict = Depends(
         raise HTTPException(status_code=500, detail="An unexpected error occurred during interview preparation.")
 
 # --- Background Cloud Functions ---
-def simple_chunker(text: str, chunk_size: int = 1000, overlap: int = 100) -> list[str]:
+def simple_chunker(
+    text: str,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    overlap: int = DEFAULT_CHUNK_OVERLAP
+) -> list[str]:
     """A simple text chunker based on words."""
     if not text:
         return []
