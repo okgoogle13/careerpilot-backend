@@ -5,10 +5,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
-# Get the Firebase Project ID from environment variables for flexibility
-FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID")
+# Use the standard GCLOUD_PROJECT environment variable for the Google Cloud Project ID.
+GCLOUD_PROJECT = os.getenv("GCLOUD_PROJECT")
 ALGORITHMS = ["RS256"]
-AUTH_URL = f"https://securetoken.google.com/{FIREBASE_PROJECT_ID}"
+AUTH_URL = f"https://securetoken.google.com/{GCLOUD_PROJECT}"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 _public_keys_cache = {}
@@ -28,8 +28,8 @@ def get_public_keys():
     return _public_keys_cache
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
-    if not FIREBASE_PROJECT_ID:
-        raise HTTPException(status_code=500, detail="FIREBASE_PROJECT_ID is not configured on the server.")
+    if not GCLOUD_PROJECT:
+        raise HTTPException(status_code=500, detail="GCLOUD_PROJECT is not configured on the server.")
     
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
     try:
@@ -38,7 +38,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if unverified_header["kid"] not in public_keys:
             raise credentials_exception
         key = public_keys[unverified_header["kid"]]
-        payload = jwt.decode(token, key, algorithms=ALGORITHMS, audience=FIREBASE_PROJECT_ID, issuer=AUTH_URL)
+        payload = jwt.decode(token, key, algorithms=ALGORITHMS, audience=GCLOUD_PROJECT, issuer=AUTH_URL)
         return payload
     except JWTError:
         raise credentials_exception
