@@ -3,9 +3,9 @@ import json
 import requests
 import google.generativeai as genai
 from pydantic import BaseModel
-from . import config
+from import config
 from schemas import GeneratedContent, InterviewPrepOutput
-from .vector_db_service import vector_db_service
+from services.vector_db_service import vector_db_service
 
 def get_secret(secret_id, project_id):
     from google.cloud import secretmanager

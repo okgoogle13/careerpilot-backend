@@ -48,4 +48,5 @@ async def prepare_for_interview(req: InterviewPrepRequest, user: dict = Depends(
 
 @storage_fn.on_object_finalized()
 def process_and_embed_document(event: storage_fn.CloudEvent):
-    # ... (This function remains the same as the bug-fixed version)
+    # TODO: Implement document processing and embedding logic here
+    pass
