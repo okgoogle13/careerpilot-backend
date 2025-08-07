@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+
+# Local secrets
+.env
+*.env.local
+
+# Service account keys
+*.json.key
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

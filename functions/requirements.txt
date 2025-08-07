@@ -1,0 +1,15 @@
+# backend/requirements.txt
+
+# Core libraries for running FastAPI on Firebase
+firebase-functions
+fastapi
+
+# Installs Genkit core, plus the FastAPI and Zod plugins
+google-genkit[fastapi,zod]
+
+# Google Cloud libraries for accessing services
+google-cloud-secret-manager
+
+# Libraries for local development
+uvicorn
+python-dotenv

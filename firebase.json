@@ -1,28 +1,17 @@
 {
   "functions": [
     {
-      "source": ".",
-      "codebase": "default",
+      "source": "functions",
       "runtime": "python312",
-      "entryPoint": "api",
-      "trigger": {}
+      "codebase": "default",
+      "ignore": [
+        "venv",
+        ".git",
+        ".gitignore",
+        "firebase.json",
+        ".firebaserc",
+        "__pycache__"
+      ]
     }
-  ],
-  "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "function": "api"
-      }
-    ]
-  },
-  "storage": {
-    "rules": "storage.rules"
-  }
+  ]
 }
