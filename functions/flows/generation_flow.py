@@ -1,14 +1,11 @@
 # functions/flows/generation_flow.py
 
 import genkit
+import json
 
 # 1. Import all necessary modules
-# Schemas for data structure and user authentication
 from functions.schemas import JobDescription, GeneratedContent, User
-# The generative model configuration
 from functions.config import DEFAULT_GENERATION_MODEL
-# The services that act as our agent's tools
-from functions.services.ai_service import perplexity_client
 from functions.services.vector_db_service import pinecone_client
 
 
@@ -18,7 +15,7 @@ from functions.services.vector_db_service import pinecone_client
     input_schema=JobDescription,
     output_schema=GeneratedContent,
 )
-def generateFlow(data: JobDescription, user: User) -> GeneratedContent:
+async def generateFlow(data: JobDescription, user: User) -> GeneratedContent:
     """
     This agent analyzes a job description and uses Retrieval-Augmented Generation (RAG)
     to create application documents tailored to the user's experience stored in Pinecone.
@@ -30,25 +27,24 @@ def generateFlow(data: JobDescription, user: User) -> GeneratedContent:
     print(f"Agent 'generateFlow' started for user: {user.uid} ({user.email}).")
     
     # 3. Use the vector DB service to retrieve user-specific context (RAG)
-    # This is the "retrieveUserDocuments" tool in action.
-    # We query for context related to the job description itself.
+    context_from_db = []
     if pinecone_client:
-        context_from_db = pinecone_client.query_for_context(
+        print("Retrieving context from vector database...")
+        context_from_db = await pinecone_client.query_for_context(
             query_text=data.job_description,
             user_id=user.uid,
-            top_k=3 # Get the top 3 most relevant chunks of experience
+            top_k=3
         )
     else:
         print("WARN: Pinecone client not available. Proceeding without RAG context.")
-        context_from_db = []
 
-    # Join the retrieved text chunks into a single string for the prompt
     retrieved_experience = "\n- ".join(context_from_db)
 
-    # 4. Construct a more powerful prompt using the retrieved context
-    # This is the "Augmented" part of RAG. We are augmenting the prompt with facts.
+    # 4. Construct a powerful prompt using the retrieved context
     prompt = f"""
         You are an expert career document writer for the Australian Community Services sector.
+        You MUST return a valid JSON object with the following keys: "analysis", "cover_letter", "resume_summary".
+
         A user is applying for a job with the following description:
         ---
         JOB DESCRIPTION: {data.job_description}
@@ -66,13 +62,24 @@ def generateFlow(data: JobDescription, user: User) -> GeneratedContent:
         3.  **Resume Summary:** Draft a 3-bullet point resume summary that directly targets this job.
     """
 
-    # 5. Call the generative model (placeholder for now)
-    # llm = genkit.get_model(DEFAULT_GENERATION_MODEL)
-    # result = await llm.generate(prompt)
+    # 5. Call the generative model
+    print("Generating content with the LLM...")
+    llm = genkit.get_model(DEFAULT_GENERATION_MODEL)
+    result = await llm.generate(prompt)
+    raw_text_output = result.text()
+    print(f"LLM Raw Output: {raw_text_output}")
 
-    # 6. Format and return the structured output, now powered by RAG
-    return {
-        "analysis": "This role requires strong stakeholder engagement, a skill clearly demonstrated in your past projects.",
-        "cover_letter": f"As demonstrated in my background, where I {context_from_db[0] if context_from_db else 'managed complex cases'}, I am confident I possess the skills required for this role.",
-        "resume_summary": f"A summary that now reflects your specific experience: {retrieved_experience}",
-    }
+    # 6. Parse the model's response and return the structured output
+    try:
+        # The model should return a parsable JSON string.
+        output_data = json.loads(raw_text_output)
+        # Use the schema to validate and instantiate the output object.
+        return GeneratedContent(**output_data)
+    except (json.JSONDecodeError, TypeError) as e:
+        print(f"Error decoding JSON from model response: {e}")
+        # Provide a structured error that fits the schema
+        return GeneratedContent(
+            analysis="Error: Failed to parse content from AI model.",
+            cover_letter="Error: Failed to parse content from AI model.",
+            resume_summary="Error: Failed to parse content from AI model."
+        )

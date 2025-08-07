@@ -9,15 +9,13 @@ of the AI agents.
 
 # 1. Import necessary libraries and our custom secret service
 import pinecone
+import genkit
 from functions.services.secret_service import get_secret
 
 # 2. Initialize Pinecone connection details
-#    These are fetched once when the application starts up.
 PINECONE_API_KEY = get_secret("PINECONE_API_KEY")
-# NOTE: The Pinecone environment is usually not a secret.
-# You can store this in config.py if you prefer.
-PINECONE_ENVIRONMENT = "us-west1-gcp" # Replace with your Pinecone environment
-PINECONE_INDEX_NAME = "career-pilot-index" # The name of your index in Pinecone
+PINECONE_ENVIRONMENT = "us-west1-gcp"
+PINECONE_INDEX_NAME = "career-pilot-index"
 
 
 class PineconeClient:
@@ -30,59 +28,50 @@ class PineconeClient:
         if not api_key or not environment:
             raise ValueError("Pinecone API key and environment must be set.")
         
-        # Initialize the connection to Pinecone
         pinecone.init(api_key=api_key, environment=environment)
         
         self.index = None
-        # Connect to the specific index if it exists
         if PINECONE_INDEX_NAME in pinecone.list_indexes():
             self.index = pinecone.Index(PINECONE_INDEX_NAME)
             print(f"Successfully connected to Pinecone index: '{PINECONE_INDEX_NAME}'")
         else:
             print(f"WARN: Pinecone index '{PINECONE_INDEX_NAME}' not found. Queries will fail.")
 
-    def _get_embedding(self, text: str) -> list[float]:
+    async def _get_embedding(self, text: str) -> list[float]:
         """
-        Placeholder for converting text to a vector embedding.
-        In a real application, you would use a model like 'text-embedding-ada-002'
-        from OpenAI or a Google embedding model.
+        Converts text to a vector embedding using a Genkit embedder.
         """
         print(f"Generating embedding for text: '{text[:30]}...'")
-        # Returning a dummy vector of the correct dimension (e.g., 1536 for ada-002)
-        return [0.0] * 1536
+        # Assumes a Google embedding model is configured in the environment.
+        embedder = genkit.get_embedder("text-embedding-004")
+        result = await embedder.embed(text)
+        return result
 
-    def query_for_context(self, query_text: str, user_id: str, top_k: int = 3) -> list[str]:
+    async def query_for_context(self, query_text: str, user_id: str, top_k: int = 3) -> list[str]:
         """
-        Queries the Pinecone index to retrieve the most relevant document chunks
-        for a given query text and user.
-
-        Args:
-            query_text: The text to find relevant context for.
-            user_id: The ID of the user to scope the search. This is used as the namespace.
-            top_k: The number of top results to return.
-
-        Returns:
-            A list of strings, where each string is the text from a relevant document chunk.
+        Queries the Pinecone index asynchronously to retrieve relevant document chunks.
         """
         if not self.index:
             print("ERROR: Cannot query because Pinecone index is not available.")
             return []
 
-        # Convert the query text into a vector embedding
-        query_embedding = self._get_embedding(query_text)
+        print("Generating query embedding...")
+        query_embedding = await self._get_embedding(query_text)
 
-        # Perform the query against the Pinecone index
+        print(f"Querying Pinecone index '{PINECONE_INDEX_NAME}'...")
         try:
+            # Note: The Pinecone client library's query method is synchronous.
+            # In a high-throughput production app, you might run this in a thread pool.
+            # For Firebase Cloud Functions, this is generally acceptable.
             results = self.index.query(
                 vector=query_embedding,
                 top_k=top_k,
                 include_metadata=True,
-                namespace=user_id # Use the user_id as a namespace for multi-tenancy
+                namespace=user_id
             )
             
-            # Extract the text from the metadata of the results
             retrieved_texts = [match['metadata']['text'] for match in results['matches']]
-            print(f"Retrieved {len(retrieved_texts)} contexts from Pinecone.")
+            print(f"Retrieved {len(retrieved_texts)} contexts from Pinecone for user {user_id}.")
             return retrieved_texts
             
         except Exception as e:
