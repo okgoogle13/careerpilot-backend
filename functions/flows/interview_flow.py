@@ -28,7 +28,7 @@ def interviewPrepFlow(data: InterviewPrepData, user: User) -> InterviewPrepOutpu
         user: The authenticated user object, provided by the auth dependency.
     """
     print(f"Agent 'interviewPrepFlow' started for user: {user.uid} ({user.email}).")
-    print(f"Analyzing job description for interview prep...")
+    print("Analyzing job description for interview prep...")
 
     # 3. Use the imported services (Agent Tools)
     # This demonstrates how the agent would use its tools to gather information.
