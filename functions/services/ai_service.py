@@ -43,19 +43,17 @@ class PerplexityClient:
         Performs an in-depth search on a company using the Perplexity API.
         This method acts as a "tool" for our Genkit agents.
 
-        Args:
-            company_name: The name of the company to research.
-
-        Returns:
-            A dictionary containing structured insights about the company.
+        NOTE: This is a MOCK implementation. To enable this feature, you must
+        provide a valid PERPLEXITY_API_KEY and implement the API call below.
         """
-        print(f"Performing deep dive for company: '{company_name}' using Perplexity API...")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("!!! WARNING: Using mock data for Perplexity API call.       !!!")
+        print("!!! To implement, provide a PERPLEXITY_API_KEY and          !!!")
+        print("!!! implement the API call in ai_service.py.                !!!")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(f"MOCK-CALL: Performing deep dive for company: '{company_name}'...")
         
         # This is a placeholder for the actual API call.
-        # In a real implementation, you would use a library like 'requests'
-        # to make a POST request to the Perplexity API endpoint with your prompt.
-        
-        # Example placeholder response:
         response_data = {
             "name": company_name,
             "culture": "Reported to have a highly collaborative and innovative environment with a strong focus on professional development.",
