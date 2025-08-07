@@ -20,13 +20,10 @@ class PerplexityClient:
     
     def __init__(self, api_key: str):
         """
-        Initializes the Perplexity client.
-        
-        Args:
-            api_key: The API key for authenticating with the Perplexity API.
+        Initialize a PerplexityClient instance with the provided API key.
         
         Raises:
-            ValueError: If the API key is not provided.
+            ValueError: If the API key is missing or empty.
         """
         if not api_key:
             raise ValueError("Perplexity API key is missing. The ai_service cannot be initialized.")
@@ -40,14 +37,13 @@ class PerplexityClient:
 
     def company_deep_dive(self, company_name: str) -> dict:
         """
-        Performs an in-depth search on a company using the Perplexity API.
-        This method acts as a "tool" for our Genkit agents.
-
-        Args:
-            company_name: The name of the company to research.
-
+        Retrieve structured insights about a specified company, including culture, recent news, and values.
+        
+        Parameters:
+            company_name (str): The name of the company to research.
+        
         Returns:
-            A dictionary containing structured insights about the company.
+            dict: A dictionary containing detailed information about the company.
         """
         print(f"Performing deep dive for company: '{company_name}' using Perplexity API...")
         
