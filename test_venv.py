@@ -32,9 +32,18 @@ print("KEY DEPENDENCIES CHECK")
 print("=" * 50)
 
 key_packages = ['fastapi', 'uvicorn', 'firebase-admin', 'google-generativeai', 'pinecone-client']
+# Map package names to their correct import names
+package_import_map = {
+    'fastapi': 'fastapi',
+    'uvicorn': 'uvicorn',
+    'firebase-admin': 'firebase_admin',
+    'google-generativeai': 'google.generativeai',
+    'pinecone-client': 'pinecone',
+}
 for package in key_packages:
+    import_name = package_import_map.get(package, package.replace('-', '_'))
     try:
-        __import__(package.replace('-', '_'))
+        __import__(import_name)
         print(f"✅ {package}")
     except ImportError:
         print(f"❌ {package}")
