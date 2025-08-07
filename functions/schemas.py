@@ -26,6 +26,7 @@ InterviewPrepOutput = z.object({
 })
 
 # Schema for Authenticated User Data
-class User(z.Base):
-    uid: str
-    email: str
+User = z.object({
+    'uid': z.string(),
+    'email': z.string(),
+})
