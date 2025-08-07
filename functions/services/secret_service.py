@@ -10,15 +10,19 @@ load_dotenv()
 
 def get_secret(secret_id: str, is_local_dev: bool = not os.getenv("GOOGLE_CLOUD_PROJECT")) -> str:
     """
-    Fetches a secret from Google Secret Manager in a production environment,
-    or from a local .env file for development.
+    Retrieve a secret value from Google Secret Manager in production or from a local `.env` file during development.
     
-    Args:
-        secret_id: The name of the secret to fetch (e.g., "PINECONE_API_KEY").
-        is_local_dev: Flag to force local or production mode. Defaults to checking env var.
+    Parameters:
+        secret_id (str): The identifier of the secret to retrieve.
     
     Returns:
-        The secret value as a string.
+        str: The secret value as a string.
+    
+    Raises:
+        Exception: If retrieval from Google Secret Manager fails in production.
+        ValueError: If the local secret is not found in the `.env` file during development.
+    
+    In production, the function fetches the latest version of the specified secret from Google Secret Manager using the current project credentials. In local development, it retrieves the secret from environment variables loaded from a `.env` file, expecting the variable name to be the secret ID suffixed with `_LOCAL`.
     """
     if not is_local_dev:
         # Production environment: Fetch from Google Secret Manager

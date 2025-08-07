@@ -47,4 +47,10 @@ configure_genkit(app)
 # Health check endpoint (does not require auth)
 @app.get("/", tags=["Health Check"])
 async def read_root():
+    """
+    Handle the root endpoint and return a JSON status message indicating the API is operational.
+    
+    Returns:
+    	dict: A dictionary with a status message confirming the API is running.
+    """
     return {"status": "API is operational"}

@@ -17,8 +17,13 @@ bearer_scheme = HTTPBearer()
 
 async def get_current_user(creds: HTTPAuthorizationCredentials = Depends(bearer_scheme)) -> User:
     """
-    A FastAPI dependency that verifies the Firebase ID token and returns the user data.
-    This function will be used to protect our API routes.
+    Verifies a Firebase ID token from HTTP Bearer credentials and returns the authenticated user's information.
+    
+    Raises:
+        HTTPException: If credentials are missing or the token is invalid, with status code 401.
+    
+    Returns:
+        User: An object containing the user's UID and email extracted from the verified token.
     """
     if not creds:
         raise HTTPException(

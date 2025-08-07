@@ -31,14 +31,19 @@ class FirebaseService:
 
     def save_document_metadata(self, user_id: str, document_data: dict) -> str:
         """
-        Saves metadata for a generated document to a user's collection in Firestore.
-
-        Args:
-            user_id: The UID of the user who owns the document.
-            document_data: A dictionary containing the metadata to save.
-
+        Save metadata for a generated document under a user's 'documents' subcollection in Firestore.
+        
+        Adds a UTC timestamp to the metadata and stores it as a new document with an auto-generated ID.
+        
+        Parameters:
+            user_id (str): The unique identifier of the user.
+            document_data (dict): Metadata to associate with the document.
+        
         Returns:
-            The ID of the newly created document in Firestore.
+            str: The Firestore ID of the newly created document.
+        
+        Raises:
+            Exception: If the document could not be saved to Firestore.
         """
         try:
             # Create a reference to a new document in the user's 'documents' subcollection.
@@ -59,13 +64,13 @@ class FirebaseService:
 
     def get_user_documents(self, user_id: str) -> list[dict]:
         """
-        Retrieves all document metadata for a specific user.
-
-        Args:
-            user_id: The UID of the user whose documents to retrieve.
-
+        Retrieve all document metadata for a given user from their Firestore `documents` subcollection.
+        
+        Parameters:
+            user_id (str): The unique identifier of the user whose documents are to be retrieved.
+        
         Returns:
-            A list of dictionaries, where each dictionary is a document's metadata.
+            list[dict]: A list of dictionaries containing each document's metadata, including the document ID under the key 'id'. Returns an empty list if retrieval fails.
         """
         try:
             docs_ref = db.collection('users').document(user_id).collection('documents')

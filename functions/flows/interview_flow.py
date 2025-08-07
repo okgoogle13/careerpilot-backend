@@ -20,12 +20,16 @@ from functions.config import DEFAULT_GENERATION_MODEL
 )
 def interviewPrepFlow(data: InterviewPrepData, user: User) -> InterviewPrepOutput:
     """
-    This agent takes a job description and user documents to generate a
-    comprehensive and personalized interview preparation guide.
-
-    Args:
-        data: The input data containing the job description, resume, and cover letter.
-        user: The authenticated user object, provided by the auth dependency.
+    Generates a personalized interview preparation guide using a job description and user documents.
+    
+    Combines company culture insights, job description, and the user's resume and cover letter to produce key competencies and potential interview questions tailored for the user. The output includes company insights, a list of five competencies, and five interview questions relevant to the Australian Community Services sector.
+    
+    Parameters:
+        data (InterviewPrepData): Contains the job description, resume, and cover letter for the interview preparation.
+        user (User): The authenticated user for whom the interview preparation is generated.
+    
+    Returns:
+        InterviewPrepOutput: Structured interview preparation content including company insights, key competencies, and interview questions.
     """
     print(f"Agent 'interviewPrepFlow' started for user: {user.uid} ({user.email}).")
     print("Analyzing job description for interview prep...")

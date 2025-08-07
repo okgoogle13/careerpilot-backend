@@ -25,7 +25,10 @@ class PineconeClient:
     
     def __init__(self, api_key: str, environment: str):
         """
-        Initializes the Pinecone client. Raises ValueError if config is missing.
+        Initialize a Pinecone client connection using the provided API key and environment.
+        
+        Raises:
+            ValueError: If the API key or environment is not provided.
         """
         if not api_key or not environment:
             raise ValueError("Pinecone API key and environment must be set.")
@@ -43,9 +46,9 @@ class PineconeClient:
 
     def _get_embedding(self, text: str) -> list[float]:
         """
-        Placeholder for converting text to a vector embedding.
-        In a real application, you would use a model like 'text-embedding-ada-002'
-        from OpenAI or a Google embedding model.
+        Generate a dummy vector embedding for the given text.
+        
+        This placeholder method returns a zero vector of length 1536, simulating the output of a real embedding model.
         """
         print(f"Generating embedding for text: '{text[:30]}...'")
         # Returning a dummy vector of the correct dimension (e.g., 1536 for ada-002)
@@ -53,16 +56,15 @@ class PineconeClient:
 
     def query_for_context(self, query_text: str, user_id: str, top_k: int = 3) -> list[str]:
         """
-        Queries the Pinecone index to retrieve the most relevant document chunks
-        for a given query text and user.
-
-        Args:
-            query_text: The text to find relevant context for.
-            user_id: The ID of the user to scope the search. This is used as the namespace.
-            top_k: The number of top results to return.
-
+        Retrieve the most relevant document chunks from the Pinecone index for a given query and user.
+        
+        Parameters:
+            query_text (str): The input text to search for relevant context.
+            user_id (str): The user identifier used as the namespace for scoping the search.
+            top_k (int, optional): The maximum number of relevant results to return. Defaults to 3.
+        
         Returns:
-            A list of strings, where each string is the text from a relevant document chunk.
+            list[str]: A list of text snippets from the most relevant document chunks, or an empty list if no results are found or an error occurs.
         """
         if not self.index:
             print("ERROR: Cannot query because Pinecone index is not available.")

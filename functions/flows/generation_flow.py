@@ -20,12 +20,14 @@ from functions.services.vector_db_service import pinecone_client
 )
 def generateFlow(data: JobDescription, user: User) -> GeneratedContent:
     """
-    This agent analyzes a job description and uses Retrieval-Augmented Generation (RAG)
-    to create application documents tailored to the user's experience stored in Pinecone.
-
-    Args:
-        data: The input containing the job description.
-        user: The authenticated user object from the auth dependency.
+    Analyzes a job description and generates tailored application documents using Retrieval-Augmented Generation (RAG) based on the user's stored experience.
+    
+    Parameters:
+        data (JobDescription): The job description to analyze.
+        user (User): The authenticated user whose experience will be used for document generation.
+    
+    Returns:
+        GeneratedContent: A dictionary containing a job analysis, a cover letter paragraph, and a resume summary customized to the user's experience.
     """
     print(f"Agent 'generateFlow' started for user: {user.uid} ({user.email}).")
     
